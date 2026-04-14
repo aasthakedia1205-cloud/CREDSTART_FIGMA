@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mess Credit System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Ensure Iconify uses specified stroke width where possible */
+        iconify-icon { stroke-width: 1.5; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen text-[#825E34] bg-[#825E34]/5">
+
+    <!-- Mobile Device Simulator Container -->
+    <div class="h-[100dvh] sm:h-[850px] sm:rounded-[2.5rem] sm:shadow-2xl overflow-hidden flex flex-col sm:border-[8px] sm:border-[#825E34] bg-[#FDFBD4] w-full max-w-md relative">
+
+    <!-- View: Login -->
+    <div class="view-section flex-1 flex flex-col overflow-y-auto h-full pt-6 pr-6 pb-6 pl-6 bg-[#FDFBD4]" id="view-login">
+        <div class="flex-1 flex flex-col justify-center">
+            <div class="flex bg-[#D47E30]/10 w-16 h-16 rounded-2xl mr-auto mb-8 ml-auto shadow-sm items-center justify-center">
+                <iconify-icon icon="solar:cup-hot-linear" class="text-3xl text-[#D47E30]"></iconify-icon>
+            </div>
+            <h1 class="text-2xl font-semibold tracking-tight text-center mb-2 text-[#825E34]">Welcome to CredStart</h1>
+            <p class="text-base text-[#825E34]/60 text-center mb-8">Manage your daily meals and credits</p>
+
+            <!-- Custom Role Toggle -->
+            <div class="bg-[#825E34]/10 p-1 rounded-xl flex mb-8">
+                <button onclick="setRole('student')" id="btn-role-student" class="flex-1 transition-all duration-300 text-base font-medium bg-white rounded-lg pt-2 pb-2 shadow-sm text-[#D47E30]">Student</button>
+                <button onclick="setRole('admin')" id="btn-role-admin" class="flex-1 py-2 text-base font-medium rounded-lg text-[#825E34]/50 transition-all duration-300">Admin</button>
+            </div>
+
+            <div class="space-y-4">
+                <div class="">
+                    <label class="block text-sm font-medium text-[#825E34] mb-1">Email Address</label>
+                    <input type="email" placeholder="student@university.edu" class="w-full px-4 py-3 rounded-xl border border-[#825E34]/20 focus:outline-none focus:ring-2 focus:ring-[#D47E30] focus:border-transparent text-base bg-white transition-all text-[#825E34] placeholder-[#825E34]/40">
+                </div>
+
+                <div id="otp-section" class="hidden transition-all duration-300 opacity-0 transform translate-y-2">
+                    <label class="block text-sm font-medium text-[#825E34] mb-1">Enter OTP</label>
+                    <div class="flex gap-2 justify-between">
+                        <input type="text" maxlength="1" class="w-12 h-14 text-center text-xl font-semibold rounded-xl border border-[#825E34]/20 focus:outline-none focus:ring-2 focus:ring-[#D47E30] bg-white text-[#825E34]">
+                        <input type="text" maxlength="1" class="w-12 h-14 text-center text-xl font-semibold rounded-xl border border-[#825E34]/20 focus:outline-none focus:ring-2 focus:ring-[#D47E30] bg-white text-[#825E34]">
+                        <input type="text" maxlength="1" class="w-12 h-14 text-center text-xl font-semibold rounded-xl border border-[#825E34]/20 focus:outline-none focus:ring-2 focus:ring-[#D47E30] bg-white text-[#825E34]">
+                        <input type="text" maxlength="1" class="w-12 h-14 text-center text-xl font-semibold rounded-xl border border-[#825E34]/20 focus:outline-none focus:ring-2 focus:ring-[#D47E30] bg-white text-[#825E34]">
+                    </div>
+                </div>
+
+                <button id="login-action-btn" onclick="handleLoginAction()" class="w-full bg-[#D47E30] text-white py-3.5 rounded-xl text-base font-medium mt-4 hover:bg-[#BD5A2B] active:scale-[0.98] transition-all duration-200 shadow-md shadow-[#D47E30]/20">
+                    Send OTP
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= STUDENT VIEWS ================= -->
+
+    <!-- View: Student Dashboard -->
+    <div class="view-section hidden flex-1 flex flex-col bg-[#FDFBD4] h-full" id="view-student-dash">
+        <div class="p-6 pb-2 pt-10 flex justify-between items-center">
+            <div>
+                <p class="text-sm text-[#825E34]/60 font-medium">Good morning,</p>
+                <h2 class="text-xl tracking-tight font-semibold text-[#825E34]">Alex Student</h2>
+            </div>
+            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-[#825E34]/10">
+                <iconify-icon icon="solar:user-circle-linear" class="text-xl text-[#D47E30]"></iconify-icon>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto pt-6 pr-6 pb-6 pl-6 space-y-4">
+            <!-- Credits Left Card (Non-clickable) -->
+            <div class="bg-[#825E34] rounded-3xl p-6 shadow-lg shadow-[#825E34]/20 relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="flex items-center gap-2 mb-2 text-[#FDFBD4]">
+                        <iconify-icon icon="solar:wallet-money-linear" class="text-xl text-[#D47E30]"></iconify-icon>
+                        <span class="text-sm font-medium">Credits Left</span>
+                    </div>
+                    <h3 class="text-4xl tracking-tight font-semibold text-white mb-1">1,240</h3>
+                    <p class="text-xs text-[#FDFBD4]/70 font-medium">Resets at end of month</p>
+                </div>
+                <iconify-icon icon="solar:stars-linear" class="text-9xl text-[#D47E30]/30 absolute -right-8 -bottom-8"></iconify-icon>
+            </div>
+
+            <!-- Grid Options -->
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="nav('view-student-eat-now')" class="bg-white rounded-3xl p-5 text-left shadow-sm border border-[#825E34]/10 hover:-translate-y-1 hover:shadow-md hover:border-[#D47E30]/30 transition-all duration-300 group">
+                    <div class="w-10 h-10 bg-[#D47E30]/10 rounded-xl flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                        <iconify-icon icon="solar:hamburger-linear" class="text-xl text-[#D47E30]"></iconify-icon>
+                    </div>
+                    <h4 class="text-base font-semibold text-[#825E34]">Eat Now</h4>
+                    <p class="text-xs text-[#825E34]/60 mt-1">Place order</p>
+                </button>
+
+                <button onclick="nav('view-student-in-progress')" class="bg-white rounded-3xl p-5 text-left shadow-sm border border-[#825E34]/10 hover:-translate-y-1 hover:shadow-md hover:border-[#BD5A2B]/30 transition-all duration-300 group">
+                    <div class="w-10 h-10 bg-[#BD5A2B]/10 rounded-xl flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                        <iconify-icon icon="solar:clock-circle-linear" class="text-xl text-[#BD5A2B]"></iconify-icon>
+                    </div>
+                    <h4 class="text-base font-semibold text-[#825E34]">In Progress</h4>
+                    <p class="text-xs text-[#825E34]/60 mt-1">Active orders</p>
+                </button>
+
+                <button onclick="nav('view-student-history')" class="col-span-2 flex bg-white border-[#825E34]/10 border rounded-3xl pt-5 pr-5 pb-5 pl-5 shadow-sm items-center justify-between hover:-translate-y-1 hover:shadow-md hover:border-[#825E34]/30 transition-all duration-300 group">
+                    <div>
+                        <h4 class="text-base font-semibold text-[#825E34]">History</h4>
+                        <p class="text-xs text-[#825E34]/60 mt-1">Past completed orders</p>
+                    </div>
+                    <div class="w-10 h-10 bg-[#825E34]/10 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300">
+                        <iconify-icon icon="solar:history-linear" class="text-xl text-[#825E34]"></iconify-icon>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Nav -->
+        <div class="bg-white border-t border-[#825E34]/10 flex justify-around p-4 pb-6">
+            <button class="flex flex-col items-center gap-1 text-[#D47E30]">
+                <iconify-icon icon="solar:home-2-linear" class="text-2xl"></iconify-icon>
+                <span class="text-xs font-medium">Home</span>
+            </button>
+            <button onclick="nav('view-student-eat-now')" class="flex flex-col items-center gap-1 text-[#825E34]/40 hover:text-[#D47E30] transition-colors">
+                <iconify-icon icon="solar:add-circle-linear" class="text-2xl"></iconify-icon>
+                <span class="text-xs font-medium">Order</span>
+            </button>
+            <button class="flex flex-col items-center gap-1 text-[#825E34]/40 hover:text-[#D47E30] transition-colors">
+                <iconify-icon icon="solar:user-circle-linear" class="text-2xl"></iconify-icon>
+                <span class="text-xs font-medium">Profile</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- View: Student Eat Now -->
+    <div id="view-student-eat-now" class="view-section hidden flex-1 flex flex-col h-full bg-[#FDFBD4] relative">
+        <div class="p-6 pt-10 flex items-center gap-4 bg-[#FDFBD4]/90 backdrop-blur-md sticky top-0 z-20 border-b border-[#825E34]/10">
+            <button onclick="nav('view-student-dash')" class="p-2 -ml-2 rounded-full hover:bg-[#825E34]/5 transition-colors text-[#825E34]">
+                <iconify-icon icon="solar:arrow-left-linear" class="text-xl"></iconify-icon>
+            </button>
+            <h2 class="text-xl tracking-tight font-semibold flex-1 text-[#825E34]">Eat Now</h2>
+            <div class="text-right">
+                <p class="text-xs text-[#825E34]/60">Balance</p>
+                <p class="text-base font-semibold text-[#D47E30]">1,240</p>
+            </div>
+        </div>
+
+        <!-- Categories horizontal scroll -->
+        <div class="flex gap-2 overflow-x-auto hide-scrollbar px-6 py-4">
+            <button class="px-4 py-1.5 bg-[#D47E30] text-white rounded-full text-sm font-medium whitespace-nowrap shadow-sm shadow-[#D47E30]/20">All Items</button>
+            <button class="px-4 py-1.5 bg-white border border-[#825E34]/10 text-[#825E34]/70 hover:text-[#D47E30] rounded-full text-sm font-medium whitespace-nowrap transition-colors">Breakfast</button>
+            <button class="px-4 py-1.5 bg-white border border-[#825E34]/10 text-[#825E34]/70 hover:text-[#D47E30] rounded-full text-sm font-medium whitespace-nowrap transition-colors">Lunch</button>
+            <button class="px-4 py-1.5 bg-white border border-[#825E34]/10 text-[#825E34]/70 hover:text-[#D47E30] rounded-full text-sm font-medium whitespace-nowrap transition-colors">Snacks</button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-6 pb-24 space-y-4">
+            <!-- Food Item 1 -->
+            <div class="flex items-center gap-4 p-3 rounded-2xl border border-[#825E34]/10 shadow-sm bg-white hover:border-[#D47E30]/30 transition-colors">
+                <div class="w-16 h-16 bg-[#D47E30]/10 rounded-xl flex items-center justify-center">
+                    <iconify-icon icon="solar:hamburger-linear" class="text-3xl text-[#D47E30]"></iconify-icon>
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-base font-semibold text-[#825E34]">Club Sandwich</h4>
+                    <p class="text-sm text-[#825E34]/60 mb-1">150 Credits</p>
+                </div>
+                <div class="flex flex-col items-end gap-2">
+                    <button class="text-[#825E34]/30 hover:text-[#BD5A2B] transition-colors">
+                        <iconify-icon icon="solar:heart-linear" class="text-xl"></iconify-icon>
+                    </button>
+                    <button class="w-8 h-8 bg-[#D47E30] text-white rounded-full flex items-center justify-center shadow-sm hover:bg-[#BD5A2B] active:scale-95 transition-all">
+                        <iconify-icon icon="solar:add-linear" class="text-lg"></iconify-icon>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Food Item 2 -->
+            <div class="flex items-center gap-4 p-3 rounded-2xl border border-[#825E34]/10 shadow-sm bg-white hover:border-[#D47E30]/30 transition-colors">
+                <div class="w-16 h-16 bg-[#825E34]/10 rounded-xl flex items-center justify-center">
+                    <iconify-icon icon="solar:cup-hot-linear" class="text-3xl text-[#825E34]"></iconify-icon>
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-base font-semibold text-[#825E34]">Cold Coffee</h4>
+                    <p class="text-sm text-[#825E34]/60 mb-1">80 Credits</p>
+                </div>
+                <div class="flex flex-col items-end gap-2">
+                    <button class="text-[#825E34]/30 hover:text-[#BD5A2B] transition-colors">
+                        <iconify-icon icon="solar:heart-linear" class="text-xl"></iconify-icon>
+                    </button>
+                    <button class="w-8 h-8 bg-[#FDFBD4] text-[#D47E30] border border-[#D47E30]/20 rounded-full flex items-center justify-center">
+                        <span class="text-sm font-medium">1</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Food Item 3 (New Daily Meal from Admin) -->
+            <div class="flex items-center gap-4 p-3 rounded-2xl border border-[#BD5A2B]/20 bg-[#BD5A2B]/5 shadow-sm">
+                <div class="w-16 h-16 bg-[#BD5A2B]/10 rounded-xl flex items-center justify-center relative">
+                    <span class="absolute -top-2 -right-2 bg-[#BD5A2B] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">NEW</span>
+                    <iconify-icon icon="solar:pie-chart-linear" class="text-3xl text-[#BD5A2B]"></iconify-icon>
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-base font-semibold text-[#825E34]">Choco Pastry</h4>
+                    <p class="text-sm text-[#BD5A2B]/80 mb-1">120 Credits</p>
+                </div>
+                <div class="flex flex-col items-end gap-2">
+                    <button class="text-[#825E34]/30 hover:text-[#BD5A2B] transition-colors">
+                        <iconify-icon icon="solar:heart-linear" class="text-xl"></iconify-icon>
+                    </button>
+                    <button class="w-8 h-8 bg-[#D47E30] text-white rounded-full flex items-center justify-center shadow-sm hover:bg-[#BD5A2B] active:scale-95 transition-all">
+                        <iconify-icon icon="solar:add-linear" class="text-lg"></iconify-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sticky Cart Bottom -->
+        <div class="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-[#825E34]/10 shadow-[0_-10px_40px_-15px_rgba(130,94,52,0.1)] rounded-t-3xl">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-sm font-medium text-[#825E34]/60">1 Item Selected</span>
+                <span class="text-base font-semibold text-[#825E34]">Total: <span class="text-[#D47E30]">80 Cr</span></span>
+            </div>
+            <button onclick="placeOrder()" class="w-full bg-[#D47E30] text-white py-3.5 rounded-xl text-base font-medium hover:bg-[#BD5A2B] active:scale-[0.98] transition-all duration-200 flex justify-center items-center gap-2 shadow-md shadow-[#D47E30]/20">
+                Submit Order
+                <iconify-icon icon="solar:arrow-right-linear" class="text-lg"></iconify-icon>
+            </button>
+        </div>
+
+        <!-- Success Overlay (Hidden initially) -->
+        <div id="order-success" class="absolute inset-0 bg-[#FDFBD4]/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 hidden transition-opacity duration-300 opacity-0">
+            <div class="w-20 h-20 bg-[#D47E30]/20 rounded-full flex items-center justify-center mb-6 text-[#D47E30] animate-bounce">
+                <iconify-icon icon="solar:check-read-linear" class="text-5xl"></iconify-icon>
+            </div>
+            <h3 class="text-2xl tracking-tight font-semibold mb-2 text-[#825E34]">Order Placed!</h3>
+            <p class="text-base text-[#825E34]/60 mb-6 text-center">Your order number is</p>
+            <div class="bg-white border border-[#825E34]/10 shadow-sm px-6 py-3 rounded-xl mb-8">
+                <span class="text-2xl font-mono font-semibold tracking-widest text-[#D47E30]">#992</span>
+            </div>
+            <button onclick="nav('view-student-in-progress')" class="w-full bg-[#825E34] text-white py-3.5 rounded-xl text-base font-medium hover:bg-[#825E34]/90 transition-colors">
+                View Progress
+            </button>
+        </div>
+    </div>
+
+    <!-- View: Student In Progress -->
+    <div id="view-student-in-progress" class="view-section hidden flex-1 flex flex-col h-full bg-[#FDFBD4]">
+        <div class="p-6 pt-10 flex items-center gap-4 bg-[#FDFBD4] border-b border-[#825E34]/10">
+            <button onclick="nav('view-student-dash')" class="p-2 -ml-2 rounded-full hover:bg-[#825E34]/5 text-[#825E34] transition-colors">
+                <iconify-icon icon="solar:arrow-left-linear" class="text-xl"></iconify-icon>
+            </button>
+            <h2 class="text-xl tracking-tight font-semibold flex-1 text-[#825E34]">In Progress</h2>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6 space-y-4">
+            <!-- Active Order Card -->
+            <div class="bg-white rounded-2xl border border-[#825E34]/10 shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300">
+                <div class="bg-[#D47E30]/5 p-4 border-b border-[#825E34]/5 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-medium text-[#825E34]/60 mb-0.5">Order Number</p>
+                        <p class="text-base font-mono font-semibold text-[#825E34]">#992</p>
+                    </div>
+                    <span class="px-3 py-1 bg-[#D47E30]/10 text-[#D47E30] text-xs font-semibold rounded-full flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 bg-[#D47E30] rounded-full animate-pulse"></span>
+                        Preparing
+                    </span>
+                </div>
+                <div class="p-4 space-y-3">
+                    <div class="flex justify-between items-center text-[#825E34]">
+                        <span class="text-base font-medium">1x Cold Coffee</span>
+                        <span class="text-sm text-[#D47E30] font-medium">80 Cr</span>
+                    </div>
+                    <div class="flex justify-between items-center text-[#825E34]">
+                        <span class="text-base font-medium">1x Club Sandwich</span>
+                        <span class="text-sm text-[#D47E30] font-medium">150 Cr</span>
+                    </div>
+                    <div class="pt-3 border-t border-[#825E34]/10 flex justify-between items-center">
+                        <span class="text-sm font-medium text-[#825E34]/60">Total Spent</span>
+                        <span class="text-base font-semibold text-[#D47E30]">230 Cr</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View: Student History -->
+    <div id="view-student-history" class="view-section hidden flex-1 flex flex-col h-full bg-[#FDFBD4]">
+        <div class="p-6 pt-10 flex items-center gap-4 bg-[#FDFBD4] border-b border-[#825E34]/10">
+            <button onclick="nav('view-student-dash')" class="p-2 -ml-2 rounded-full hover:bg-[#825E34]/5 text-[#825E34] transition-colors">
+                <iconify-icon icon="solar:arrow-left-linear" class="text-xl"></iconify-icon>
+            </button>
+            <h2 class="text-xl tracking-tight font-semibold flex-1 text-[#825E34]">Order History</h2>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6 space-y-4">
+            <!-- Completed Order Card -->
+            <div class="bg-white rounded-2xl border border-[#825E34]/10 shadow-sm overflow-hidden opacity-80 hover:opacity-100 transition-opacity duration-300">
+                <div class="p-4 border-b border-[#825E34]/5 flex justify-between items-center">
+                    <div>
+                        <p class="text-base font-mono font-semibold text-[#825E34]">#845</p>
+                        <p class="text-xs text-[#825E34]/50 mt-0.5">Yesterday, 1:30 PM</p>
+                    </div>
+                    <span class="px-3 py-1 bg-[#825E34]/10 text-[#825E34] text-xs font-semibold rounded-full flex items-center gap-1.5">
+                        <iconify-icon icon="solar:check-circle-linear" class="text-sm"></iconify-icon>
+                        Completed
+                    </span>
+                </div>
+                <div class="p-4">
+                    <p class="text-sm text-[#825E34]/80 mb-2">2x Masala Dosa, 1x Tea</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-medium text-[#825E34]/60">Total</span>
+                        <span class="text-sm font-semibold text-[#825E34]">120 Cr</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-[#825E34]/10 shadow-sm overflow-hidden opacity-80 hover:opacity-100 transition-opacity duration-300">
+                <div class="p-4 border-b border-[#825E34]/5 flex justify-between items-center">
+                    <div>
+                        <p class="text-base font-mono font-semibold text-[#825E34]">#812</p>
+                        <p class="text-xs text-[#825E34]/50 mt-0.5">Oct 24, 9:15 AM</p>
+                    </div>
+                    <span class="px-3 py-1 bg-[#825E34]/10 text-[#825E34] text-xs font-semibold rounded-full flex items-center gap-1.5">
+                        <iconify-icon icon="solar:check-circle-linear" class="text-sm"></iconify-icon>
+                        Completed
+                    </span>
+                </div>
+                <div class="p-4">
+                    <p class="text-sm text-[#825E34]/80 mb-2">1x Poha</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-medium text-[#825E34]/60">Total</span>
+                        <span class="text-sm font-semibold text-[#825E34]">40 Cr</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= ADMIN VIEWS ================= -->
+
+    <!-- View: Admin Dashboard -->
+    <div class="view-section hidden flex-1 flex flex-col bg-[#FDFBD4] h-full" id="view-admin-dash">
+        <div class="p-6 pb-2 pt-10 flex justify-between items-center">
+            <div>
+                <p class="text-sm text-[#825E34]/60 font-medium">Overview</p>
+                <h2 class="text-xl tracking-tight font-semibold text-[#825E34]">Admin Dashboard</h2>
+            </div>
+            <div class="w-10 h-10 bg-[#825E34] rounded-xl flex items-center justify-center shadow-sm">
+                <iconify-icon icon="solar:shield-user-linear" class="text-xl text-white"></iconify-icon>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6 space-y-4">
+            <!-- Students Stats -->
+            <button onclick="nav('view-admin-students')" class="w-full bg-[#825E34] rounded-3xl p-6 shadow-lg shadow-[#825E34]/20 relative overflow-hidden text-left flex justify-between items-center group hover:-translate-y-1 transition-all duration-300">
+                <div>
+                    <div class="flex items-center gap-2 mb-1 text-[#FDFBD4]/90">
+                        <iconify-icon icon="solar:users-group-rounded-linear" class="text-lg"></iconify-icon>
+                        <span class="text-sm font-medium">Total Enrolled</span>
+                    </div>
+                    <h3 class="text-3xl tracking-tight font-semibold text-white">1,204</h3>
+                </div>
+                <div class="w-10 h-10 bg-[#FDFBD4]/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 group-hover:bg-[#FDFBD4]/30 transition-all duration-300">
+                    <iconify-icon icon="solar:alt-arrow-right-linear" class="text-xl text-white"></iconify-icon>
+                </div>
+            </button>
+
+            <!-- Grid Options -->
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="nav('view-admin-check-orders')" class="col-span-2 bg-white rounded-3xl p-5 text-left shadow-sm border border-[#825E34]/10 flex items-center gap-4 hover:border-[#D47E30]/40 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+                    <div class="w-12 h-12 bg-[#D47E30]/10 rounded-2xl flex items-center justify-center">
+                        <iconify-icon icon="solar:checklist-minimalistic-linear" class="text-2xl text-[#D47E30]"></iconify-icon>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-base font-semibold text-[#825E34]">Check Orders</h4>
+                        <p class="text-sm text-[#825E34]/60">View live student orders</p>
+                    </div>
+                    <span class="bg-[#BD5A2B] text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm shadow-[#BD5A2B]/20 animate-pulse">3 New</span>
+                </button>
+
+                <button onclick="nav('view-admin-meal-update')" class="bg-white rounded-3xl p-5 text-left shadow-sm border border-[#825E34]/10 hover:border-[#BD5A2B]/40 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+                    <div class="w-10 h-10 bg-[#BD5A2B]/10 rounded-xl flex items-center justify-center mb-3">
+                        <iconify-icon icon="solar:add-circle-linear" class="text-xl text-[#BD5A2B]"></iconify-icon>
+                    </div>
+                    <h4 class="text-base font-semibold text-[#825E34]">Meal Update</h4>
+                    <p class="text-xs text-[#825E34]/60 mt-1">Add daily specials</p>
+                </button>
+
+                <button onclick="nav('view-admin-menu')" class="bg-white rounded-3xl p-5 text-left shadow-sm border border-[#825E34]/10 hover:border-[#825E34]/40 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+                    <div class="w-10 h-10 bg-[#825E34]/10 rounded-xl flex items-center justify-center mb-3">
+                        <iconify-icon icon="solar:notebook-linear" class="text-xl text-[#825E34]"></iconify-icon>
+                    </div>
+                    <h4 class="text-base font-semibold text-[#825E34]">Fixed Menu</h4>
+                    <p class="text-xs text-[#825E34]/60 mt-1">View predefined list</p>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View: Admin Check Orders -->
+    <div id="view-admin-check-orders" class="view-section hidden flex-1 flex flex-col h-full bg-[#FDFBD4]">
+        <div class="p-6 pt-10 flex items-center gap-4 bg-[#FDFBD4]/90 backdrop-blur-md border-b border-[#825E34]/10 sticky top-0 z-10">
+            <button onclick="nav('view-admin-dash')" class="p-2 -ml-2 rounded-full hover:bg-[#825E34]/5 text-[#825E34] transition-colors">
+                <iconify-icon icon="solar:arrow-left-linear" class="text-xl"></iconify-icon>
+            </button>
+            <h2 class="text-xl tracking-tight font-semibold flex-1 text-[#825E34]">Live Orders</h2>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 space-y-4">
+            <!-- Order Card Admin -->
+            <div class="bg-white rounded-2xl border border-[#D47E30]/20 shadow-sm overflow-hidden">
+                <div class="p-4 border-b border-[#825E34]/5 flex justify-between items-start bg-[#D47E30]/5">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-lg font-mono font-semibold text-[#825E34]">#992</span>
+                            <span class="px-2 py-0.5 bg-[#D47E30]/10 text-[#D47E30] text-[10px] font-bold rounded uppercase tracking-wider">New</span>
+                        </div>
+                        <p class="text-xs text-[#825E34]/60">Student ID: STD-4492</p>
+                    </div>
+                    <span class="text-base font-semibold text-[#D47E30]">230 Cr</span>
+                </div>
+                <div class="p-4">
+                    <ul class="text-sm text-[#825E34] space-y-1 mb-4 list-disc list-inside">
+                        <li>1x Cold Coffee</li>
+                        <li>1x Club Sandwich</li>
+                    </ul>
+                    <!-- Custom Toggle -->
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-[#825E34]/80">Mark Completed</span>
+                        <button class="w-12 h-6 bg-[#825E34]/20 rounded-full relative transition-colors duration-300 ease-in-out focus:outline-none" onclick="this.classList.toggle('bg-[#D47E30]'); this.classList.toggle('bg-[#825E34]/20'); this.children[0].classList.toggle('translate-x-6')">
+                            <span class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300 ease-in-out shadow-sm"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-[#825E34]/10 shadow-sm overflow-hidden opacity-70">
+                <div class="p-4 border-b border-[#825E34]/5 flex justify-between items-start">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-lg font-mono font-semibold text-[#825E34]/70">#991</span>
+                        </div>
+                        <p class="text-xs text-[#825E34]/50">Student ID: STD-1102</p>
+                    </div>
+                    <span class="text-base font-semibold text-[#825E34]/50">80 Cr</span>
+                </div>
+                <div class="p-4">
+                    <ul class="text-sm text-[#825E34]/70 space-y-1 mb-4 list-disc list-inside">
+                        <li>1x Cold Coffee</li>
+                    </ul>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-[#825E34]/50">Completed</span>
+                        <div class="w-12 h-6 bg-[#825E34]/40 rounded-full relative">
+                            <span class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full translate-x-6 shadow-sm"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View: Admin Meal Update -->
+    <div id="view-admin-meal-update" class="view-section hidden flex-1 flex flex-col h-full bg-[#FDFBD4]">
+        <div class="p-6 pt-10 flex items-center gap-4 bg-[#FDFBD4] border-b border-[#825E34]/10">
+            <button onclick="nav('view-admin-dash')" class="p-2 -ml-2 rounded-full hover:bg-[#825E34]/5 text-[#825E34] transition-colors">
+                <iconify-icon icon="solar:arrow-left-linear" class="text-xl"></iconify-icon>
+            </button>
+            <h2 class="text-xl tracking-tight font-semibold flex-1 text-[#825E34]">Add Daily Meal</h2>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6">
+            <form class="space-y-5" onsubmit="event.preventDefault(); nav('view-admin-dash')">
+                <div>
+                    <label class="block text-sm font-medium text-[#825E34] mb-1.5">Item Name</label>
+                    <input type="text" placeholder="e.g. Special Choco Pastry" class="w-full px-4 py-3 rounded-xl border border-[#825E34]/20 focus:outline-none focus:ring-2 focus:ring-[#D47E30] focus:border-transparent text-base bg-white text-[#825E34] transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-[#825E34] mb-1.5">Credits Required</label>
+                    <input type="number" placeholder="120" class="w-full px-4 py-3 rounded-xl border border-[#825E34]/20 focus:outline-none focus:ring-2 focus:ring-[#D47E30] focus:border-transparent text-base bg-white text-[#825E34] transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-[#825E34] mb-1.5">Category</label>
+                    <div class="relative">
+                        <select class="w-full px-4 py-3 rounded-xl border border-[#825E34]/20 focus:outline-none focus:ring-2 focus:ring-[#D47E30] focus:border-transparent text-base appearance-none bg-white text-[#825E34] transition-all">
+                            <option>Breakfast</option>
+                            <option>Lunch</option>
+                            <option>Snacks</option>
+                            <option>Dinner</option>
+                        </select>
+                        <iconify-icon icon="solar:alt-arrow-down-linear" class="text-xl absolute right-4 top-3.5 text-[#825E34]/40 pointer-events-none"></iconify-icon>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-[#D47E30] text-white py-3.5 rounded-xl text-base font-medium mt-4 hover:bg-[#BD5A2B] active:scale-[0.98] transition-all duration-200 flex justify-center items-center gap-2 shadow-md shadow-[#D47E30]/20">
+                    <iconify-icon icon="solar:add-linear" class="text-lg"></iconify-icon>
+                    Add to Today's Menu
+                </button>
+            </form>
+
+            <div class="mt-8">
+                <h3 class="text-sm font-medium text-[#825E34]/60 mb-4 uppercase tracking-wider">Added Today</h3>
+                <div class="flex items-center justify-between p-4 rounded-xl border border-[#D47E30]/20 bg-white shadow-sm hover:border-[#D47E30]/40 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-[#D47E30]/10 rounded-lg flex items-center justify-center">
+                            <iconify-icon icon="solar:pie-chart-linear" class="text-xl text-[#D47E30]"></iconify-icon>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-[#825E34]">Choco Pastry</p>
+                            <p class="text-xs text-[#D47E30]">120 Credits</p>
+                        </div>
+                    </div>
+                    <button class="text-[#825E34]/30 hover:text-[#BD5A2B] transition-colors p-2 rounded-lg hover:bg-[#BD5A2B]/10">
+                        <iconify-icon icon="solar:trash-bin-trash-linear" class="text-lg"></iconify-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View: Admin Fixed Menu -->
+    <div id="view-admin-menu" class="view-section hidden flex-1 flex flex-col h-full bg-[#FDFBD4]">
+        <div class="p-6 pt-10 flex items-center gap-4 bg-[#FDFBD4] border-b border-[#825E34]/10">
+            <button onclick="nav('view-admin-dash')" class="p-2 -ml-2 rounded-full hover:bg-[#825E34]/5 text-[#825E34] transition-colors">
+                <iconify-icon icon="solar:arrow-left-linear" class="text-xl"></iconify-icon>
+            </button>
+            <h2 class="text-xl tracking-tight font-semibold flex-1 text-[#825E34]">Fixed Menu</h2>
+        </div>
+
+        <div class="bg-[#825E34]/5 p-4 border-b border-[#825E34]/10 flex items-start gap-3">
+            <iconify-icon icon="solar:info-circle-linear" class="text-xl text-[#825E34] shrink-0 mt-0.5"></iconify-icon>
+            <p class="text-sm text-[#825E34]/80 leading-relaxed">These items and their credit values are predefined and cannot be modified from the app.</p>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 space-y-2">
+            <div class="flex items-center justify-between p-4 bg-white rounded-xl border border-[#825E34]/10 shadow-sm hover:border-[#D47E30]/30 transition-colors">
+                <span class="text-base font-medium text-[#825E34]">Club Sandwich</span>
+                <span class="text-sm font-semibold text-[#D47E30] bg-[#D47E30]/10 px-2.5 py-1 rounded-md">150 Cr</span>
+            </div>
+            <div class="flex items-center justify-between p-4 bg-white rounded-xl border border-[#825E34]/10 shadow-sm hover:border-[#D47E30]/30 transition-colors">
+                <span class="text-base font-medium text-[#825E34]">Cold Coffee</span>
+                <span class="text-sm font-semibold text-[#D47E30] bg-[#D47E30]/10 px-2.5 py-1 rounded-md">80 Cr</span>
+            </div>
+            <div class="flex items-center justify-between p-4 bg-white rounded-xl border border-[#825E34]/10 shadow-sm hover:border-[#D47E30]/30 transition-colors">
+                <span class="text-base font-medium text-[#825E34]">Masala Dosa</span>
+                <span class="text-sm font-semibold text-[#D47E30] bg-[#D47E30]/10 px-2.5 py-1 rounded-md">100 Cr</span>
+            </div>
+            <div class="flex items-center justify-between p-4 bg-white rounded-xl border border-[#825E34]/10 shadow-sm hover:border-[#D47E30]/30 transition-colors">
+                <span class="text-base font-medium text-[#825E34]">Tea</span>
+                <span class="text-sm font-semibold text-[#D47E30] bg-[#D47E30]/10 px-2.5 py-1 rounded-md">20 Cr</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- View: Admin Students -->
+    <div id="view-admin-students" class="view-section hidden flex-1 flex flex-col h-full bg-[#FDFBD4]">
+        <div class="p-6 pt-10 flex items-center gap-4 bg-[#FDFBD4] border-b border-[#825E34]/10">
+            <button onclick="nav('view-admin-dash')" class="p-2 -ml-2 rounded-full hover:bg-[#825E34]/5 text-[#825E34] transition-colors">
+                <iconify-icon icon="solar:arrow-left-linear" class="text-xl"></iconify-icon>
+            </button>
+            <h2 class="text-xl tracking-tight font-semibold flex-1 text-[#825E34]">Enrolled Students</h2>
+        </div>
+
+        <div class="p-6 bg-white border-b border-[#825E34]/10">
+            <div class="relative">
+                <iconify-icon icon="solar:magnifer-linear" class="text-xl absolute left-3 top-3.5 text-[#825E34]/40"></iconify-icon>
+                <input type="text" placeholder="Search ID or Name" class="w-full pl-10 pr-4 py-3 rounded-xl border border-[#825E34]/20 focus:outline-none focus:ring-2 focus:ring-[#D47E30] text-sm bg-[#FDFBD4]/50 text-[#825E34] transition-all">
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto bg-white">
+            <div class="divide-y divide-[#825E34]/10">
+                <!-- Student Row -->
+                <div class="p-4 px-6 flex items-center justify-between hover:bg-[#FDFBD4]/50 transition-colors cursor-pointer">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-[#825E34]/10 rounded-full flex items-center justify-center text-[#825E34] font-medium text-sm">
+                            AS</div>
+                        <div>
+                            <p class="text-sm font-semibold text-[#825E34]">Alex Student</p>
+                            <p class="text-xs text-[#825E34]/60">STD-4492</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-medium text-[#D47E30]">1,240 Cr</p>
+                    </div>
+                </div>
+                <!-- Student Row -->
+                <div class="p-4 px-6 flex items-center justify-between hover:bg-[#FDFBD4]/50 transition-colors cursor-pointer">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-[#825E34]/10 rounded-full flex items-center justify-center text-[#825E34] font-medium text-sm">
+                            JD</div>
+                        <div>
+                            <p class="text-sm font-semibold text-[#825E34]">John Doe</p>
+                            <p class="text-xs text-[#825E34]/60">STD-1102</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-medium text-[#D47E30]">450 Cr</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+    <script>
+        // Navigation Logic
+        function nav(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            const targetView = document.getElementById(viewId);
+            targetView.classList.remove('hidden');
+            
+            // Simple fade-in effect for views
+            targetView.style.opacity = 0;
+            setTimeout(() => {
+                targetView.style.transition = 'opacity 0.3s ease';
+                targetView.style.opacity = 1;
+            }, 10);
+            
+            window.scrollTo(0,0);
+        }
+
+        // Login Flow Logic
+        let currentRole = 'student';
+        let loginStep = 1;
+
+        function setRole(role) {
+            currentRole = role;
+            const btnS = document.getElementById('btn-role-student');
+            const btnA = document.getElementById('btn-role-admin');
+            
+            if(role === 'student') {
+                btnS.className = "flex-1 py-2 text-base font-medium rounded-lg bg-white shadow-sm text-[#D47E30] transition-all duration-300";
+                btnA.className = "flex-1 py-2 text-base font-medium rounded-lg text-[#825E34]/50 transition-all duration-300 hover:text-[#825E34]/70";
+            } else {
+                btnA.className = "flex-1 py-2 text-base font-medium rounded-lg bg-white shadow-sm text-[#D47E30] transition-all duration-300";
+                btnS.className = "flex-1 py-2 text-base font-medium rounded-lg text-[#825E34]/50 transition-all duration-300 hover:text-[#825E34]/70";
+            }
+        }
+
+        function handleLoginAction() {
+            if(loginStep === 1) {
+                const otpSection = document.getElementById('otp-section');
+                otpSection.classList.remove('hidden');
+                // trigger animation
+                setTimeout(() => {
+                    otpSection.classList.remove('opacity-0', 'translate-y-2');
+                }, 10);
+                
+                document.getElementById('login-action-btn').innerText = "Verify & Login";
+                loginStep = 2;
+            } else {
+                // Perform Login based on role
+                nav(currentRole === 'student' ? 'view-student-dash' : 'view-admin-dash');
+                
+                // Reset for demo purposes if they go back
+                setTimeout(() => {
+                    loginStep = 1;
+                    const otpSection = document.getElementById('otp-section');
+                    otpSection.classList.add('hidden', 'opacity-0', 'translate-y-2');
+                    document.getElementById('login-action-btn').innerText = "Send OTP";
+                }, 500);
+            }
+        }
+
+        // Student Eat Now specific logic
+        function placeOrder() {
+            const overlay = document.getElementById('order-success');
+            overlay.classList.remove('hidden');
+            
+            // Fade in
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+            }, 10);
+            
+            // Auto hide and navigate after short delay for prototype feel
+            setTimeout(() => {
+                overlay.classList.add('opacity-0');
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                    nav('view-student-in-progress');
+                }, 300);
+            }, 2000);
+        }
+    </script>
+
+</body>
+</html>
